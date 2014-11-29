@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="chardet">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/chardet.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/LBJ2Library.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/juniversalchardet-1.0.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
