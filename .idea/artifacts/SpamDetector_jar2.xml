@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SpamDetector:jar2">
+    <output-path>$PROJECT_DIR$/classes/artifacts/SpamDetector_jar2</output-path>
+    <root id="archive" name="SpamDetector.jar">
+      <element id="module-output" name="SpamDetector" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/libsvm.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jsoup-1.8.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/chardet.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/LBJ2Library.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/juniversalchardet-1.0.3.jar" path-in-jar="/" />
+      <element id="library" level="module" name="libsvm.jar" module-name="SpamDetector" />
+      <element id="library" level="module" name="jsoup-1.8.1.jar" module-name="SpamDetector" />
+      <element id="library" level="module" name="juniversalchardet-1.0.3.jar" module-name="SpamDetector" />
+    </root>
+  </artifact>
+</component>

@@ -1,20 +1,15 @@
 package bayes;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import test.StopWords;
 
 public class NaiveBayes {
     private HashMap<String, Integer> spamMap;
@@ -24,10 +19,10 @@ public class NaiveBayes {
 
     private double numberOfSpam;
     private double numberOfHam;
-
-    //	private final String regex = "\\W+";
-//	private final String regex = "[^a-zA-Z0-9$!-,%]";
-    private final String regex = "\\s+";
+    private StopWords stopWords;
+    private final String regex = "\\W+";
+	//private final String regex = "[^a-zA-Z0-9$!-%]";
+    //private final String regex = "\\s+";
 
     public NaiveBayes() {
         spamMap = new HashMap<String, Integer>();
@@ -35,6 +30,7 @@ public class NaiveBayes {
         spamicityMap = new HashMap<String, Double>();
         numberOfSpam = 0;
         numberOfHam = 0;
+        stopWords = new StopWords();
     }
 
     public Map<String, Double> getSpamicityMap(){
@@ -59,10 +55,32 @@ public class NaiveBayes {
     /**
      * TRAINING
      *
-     * @param email
+     * @param file
      */
-    public void trainSpam(List<String> email) {
+    public void trainSpam(String file) {
+        System.out.println("Parsing emails with delimiter = "+regex);
         numberOfSpam++;
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String noHtmlText = line;
+                String[] arr = noHtmlText.split(regex);
+                String prefix = getPrefix(line);
+                for (String word : arr){
+                    if(stopWords.isStopWord(word))
+                        continue;
+                    word = prefix+word;
+                    this.countSpam(word);
+                }
+            }
+            br.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            System.out.println(e.getMessage());
+        }
+        /*
         for (String line : email) {
             Document doc = Jsoup.parse(line);
 
@@ -77,13 +95,34 @@ public class NaiveBayes {
             String prefix = getPrefix(line);
             for (String word : arr){
                 word = prefix+word;
-                this.countSpam(word.trim());
+                this.countSpam(word);
             }
-        }
+        }*/
     }
 
-    public void trainHam(List<String> email) {
+    public void trainHam(String file) {
         numberOfHam++;
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String noHtmlText = line;
+                String[] arr = noHtmlText.split(regex);
+                String prefix = getPrefix(line);
+                for (String word : arr){
+                    if(stopWords.isStopWord(word))
+                        continue;
+                    word = prefix+word;
+                    this.countHam(word);
+                }
+            }
+            br.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            System.out.println(e.getMessage());
+        }
+        /*
         for (String line : email) {
             Document doc = Jsoup.parse(line);
             String noHtmlText = line;
@@ -97,9 +136,9 @@ public class NaiveBayes {
             String prefix = getPrefix(line);
             for (String word : arr){
                 word = prefix+word;
-                this.countHam(word.trim());
+                this.countHam(word);
             }
-        }
+        }*/
     }
 
     public void countSpam(String word) {
@@ -200,7 +239,8 @@ public class NaiveBayes {
             String prefix = getPrefix(line);
 
             for (String word : arr) {
-
+                if(stopWords.isStopWord(word))
+                    continue;
                 double p_word = pWordSpamDefault;
                 word = prefix+word;
                 if (spamicityMap.containsKey(word))

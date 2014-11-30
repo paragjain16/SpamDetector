@@ -140,16 +140,14 @@ public class Test {
 	 * @param nbayes
 	 */
 	public static void parseEmail(String emailPath, boolean isSpam, NaiveBayes nbayes) {
-
-		List<String> email = new ArrayList<String>();
-		email = DataReader.readFile(emailPath);
+		//List<String> email = DataReader.readFile(emailPath);
 
 		// Only text based
 		if (isSpam) {
-			nbayes.trainSpam(email);
+			nbayes.trainSpam(emailPath);
 
 		} else {
-			nbayes.trainHam(email);
+			nbayes.trainHam(emailPath);
 		}
 	}
     //For DataSet from LBJ Tutorial
@@ -215,7 +213,7 @@ public class Test {
             }
         }
 
-        int[] interestingTokens = { 5, 10, 15, 20, 25, 30, 35, 40,45, 50 };
+        int[] interestingTokens = { 5, 10, 15, 25, 35, 45 };
         for (int i = 0; i < interestingTokens.length; i++) {
             int accuracyHam = 0;
             int accuracySpam = 0;
@@ -224,6 +222,7 @@ public class Test {
             for (String line : trainSet) {
 
                 if (line.endsWith("spam.txt")) {
+
                     emailPath = "/Users/MayankMahajan/Desktop/EclipseWorkspace/LBJSpamDetector/data/spam/train/spam/"+line;
                 }else{
                     emailPath = "/Users/MayankMahajan/Desktop/EclipseWorkspace/LBJSpamDetector/data/spam/train/ham/"+line;
