@@ -14,6 +14,7 @@ public class StopWords {
         readFile();
     }
     public void readFile(){
+        stopwords = new HashSet<String>();
         BufferedReader br;
         try {
             br = new BufferedReader(new FileReader("C:\\Users\\Parag\\Desktop\\Project\\stopwords.txt"));

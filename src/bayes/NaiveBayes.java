@@ -31,6 +31,7 @@ public class NaiveBayes {
         numberOfSpam = 0;
         numberOfHam = 0;
         stopWords = new StopWords();
+        System.out.println("Regex used for delimiter = "+regex);
     }
 
     public Map<String, Double> getSpamicityMap(){
@@ -58,7 +59,7 @@ public class NaiveBayes {
      * @param file
      */
     public void trainSpam(String file) {
-        System.out.println("Parsing emails with delimiter = "+regex);
+
         numberOfSpam++;
         BufferedReader br;
         try {
