@@ -14,7 +14,7 @@ public class GenSpamHamFolder {
 	}
 	
 	public static void indexFileReader() {
-		String spamHamFile = "/Users/MayankMahajan/Desktop/UIUC Fall 2014/ML CS466/Project/Datasets/TREC/trec07p/full/index";
+		String spamHamFile = "C:\\Users\\Parag\\Desktop\\Project\\trec07p\\full\\index";
 		List<String> spamHams = DataReader.readFile(spamHamFile);
 	
 		
@@ -33,17 +33,17 @@ public class GenSpamHamFolder {
 	}
 	
 	public static void copyFn(List<String> set, String type){
-		String path = "/Users/MayankMahajan/Desktop/UIUC Fall 2014/ML CS466/Project/Datasets/TREC/trec07p/full/";
-		String destPath = "/Users/MayankMahajan/Desktop/EclipseWorkspace/SpamDetector/dataset/"+type+"/";
+		String path = "C:\\Users\\Parag\\Desktop\\Project\\trec07p\\full\\";
+		String destPath = "C:\\Users\\Parag\\Desktop\\Project\\dataset\\"+type+"\\";
 		for(String line: set){
 			
-			String subPath = line.substring(line.indexOf(".."));
-			Path source = Paths.get(path+subPath);
+			String subPath = line.substring(line.lastIndexOf(("/")));
+			Path source = Paths.get(path+"data\\"+subPath);
 			Path dest = null;
 			if(line.startsWith("spam")){
-				dest = 	Paths.get(destPath+"spam/"+source.getFileName()+".spam.txt");
+				dest = 	Paths.get(destPath+"spam\\"+source.getFileName()+".spam.txt");
 			}else{
-				dest = 	Paths.get(destPath+"ham/"+source.getFileName()+".ham.txt");	
+				dest = 	Paths.get(destPath+"ham\\"+source.getFileName()+".ham.txt");
 			}
 			try {
 				Files.copy(source, dest);

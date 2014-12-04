@@ -10,6 +10,7 @@ import java.util.HashSet;
  */
 public class StopWords {
     private HashSet<String> stopwords;
+    private boolean used = true;
     public StopWords(){
         readFile();
     }
@@ -29,6 +30,9 @@ public class StopWords {
         }
     }
     public boolean isStopWord(String word){
-        return stopwords.contains(word);
+        if(used)
+            return stopwords.contains(word);
+        else
+            return false;
     }
 }
