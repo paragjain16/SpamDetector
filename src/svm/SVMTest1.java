@@ -27,11 +27,14 @@ public class SVMTest1 {
     private RandomProjection randomProjection;
     private boolean cf = false;
     private int ngram = 4;
+    private ArrayList<svm_node[]> randomNodes;
+    private int numDataPoints = 30;
 
 	public SVMTest1(){
 		//wordMap = new HashMap<String, Integer>();
 		files = new ArrayList<File>();
         tfMaps = new ArrayList<Map<Integer, Double>>();
+        randomNodes = new ArrayList<svm_node[]>(numDataPoints);
 	}
 
 	public void setRP(boolean rp){
@@ -283,13 +286,75 @@ public class SVMTest1 {
 		 	reader.close();
     	}
         if(rp){
+            chooseDataPoints(prob.x);
+            System.out.println("Pairwise distances before random projection ");
+            calculateDistance(randomNodes);
             randomProjection = new RandomProjection(reducedDimensionSize, wordMap.size());
             randomProjection.convertToRandomProjection(prob.x);
+            System.out.println("Pairwise distances after random projection ");
+            calculateDistance(randomNodes);
         }
         prob.l = files.size();
         System.out.println("[SVM TRAIN END]");
 		return prob;
 	}
+    public void chooseDataPoints(svm_node[][] dataNodes){
+        Random r = new Random();
+        int size = dataNodes.length;
+        int i = numDataPoints;
+        while( i > 0 ){
+            int index = r.nextInt(size);
+            randomNodes.add(dataNodes[index]);
+            i--;
+        }
+    }
+    public void calculateDistance(ArrayList<svm_node[]> dataNodes){
+        int size = dataNodes.size();
+        for(int i = 0; i < size/2; i++){
+            System.out.println("Distance between Data Node "+(i+1)+" and "+(size-i)+" is "
+                    + distanceBetweenVector(dataNodes.get(i), dataNodes.get(size-i-1)));
+        }
+    }
+
+    public double distanceBetweenVector(svm_node[] v1, svm_node[] v2){
+        double distance = 0.0;
+        int i=0;
+        int j=0;
+        int index1 = 0;
+        int index2 = 0;
+        double value1= 0.0;
+        double value2 = 0.0;
+        while(i < v1.length-1 && j < v2.length-1){
+            index1 = v1[i].index;
+            value1 = v1[i].value;
+            index2 = v2[j].index;
+            value2 = v2[j].value;
+            if(index1 == index2){
+                distance += ((value1- value2)*(value1- value2));
+                i++;
+                j++;
+            }else if(index1 > index2){
+                distance += ((0 - value2)*(0 - value2));
+                j++;
+            }else{
+                distance += ((value1 - 0)*(value1 - 0));
+                i++;
+            }
+        }
+        if( i < v1.length - 1){
+            while(i < v1.length -1){
+                distance += (v1[i].value * v1[i].value);
+                i++;
+            }
+        }
+        if( j < v2.length - 1){
+            while(j < v2.length -1){
+                distance += (v2[j].value * v2[j].value);
+                j++;
+            }
+        }
+        return Math.sqrt(distance);
+    }
 	
 	public void svmPredict(String directory) throws IOException{
     	svm_model model = svm.svm_load_model("spam_svm.model");

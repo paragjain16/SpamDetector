@@ -70,7 +70,7 @@ public class RandomProjection {
         //Iterate through all files/documents/instances
         for(int i=0; i < x.length; i++) {
             //map feature vector of each file to lower dimension
-            x[i] = calculateRandomProjectionNode(x[i]);
+            x[i] =  calculateRandomProjectionNode(x[i]);
         }
     }
 
@@ -81,7 +81,7 @@ public class RandomProjection {
             new_node[i] = new svm_node();
             new_node[i].index = i;
             // calculate value for this feature using random projection matrix
-            new_node[i].value = computeRPValue(i ,svm_nodes);
+            new_node[i].value =  computeRPValue(i ,svm_nodes) * (1.0/Math.sqrt(k));
         }
         new_node[k] = new svm_node();
         new_node[k].index = -1;

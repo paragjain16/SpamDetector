@@ -23,10 +23,13 @@ public class SVMTest {
     private RandomProjection randomProjection;
     private boolean cf = false;
     private int ngram = 4;
-     
+    private ArrayList<Integer> randomNodes;
+    private int numDataPoints = 30;
+
 	public SVMTest(){
 		//wordMap = new HashMap<String, Integer>();
 		files = new ArrayList<File>();
+        randomNodes = new ArrayList<Integer>(numDataPoints);
 	}
 
 	public void setRP(boolean rp){
@@ -103,6 +106,7 @@ public class SVMTest {
 
 		 	reader.close();
         }
+        System.out.println("Number of features "+index);
 	}
 
     protected void genCharMap(String directory) throws IOException{
@@ -139,6 +143,7 @@ public class SVMTest {
                     }
                 }
             }
+            System.out.println("Number of features "+index);
             reader.close();
         }
     }
@@ -207,14 +212,79 @@ public class SVMTest {
 
 		 	reader.close();
     	}
+
         if(rp){
+            chooseDataPoints(prob.x);
+            System.out.println("Pairwise distances before random projection ");
+            calculateDistance(randomNodes, prob.x);
             randomProjection = new RandomProjection(reducedDimensionSize, wordMap.size());
             randomProjection.convertToRandomProjection(prob.x);
+            System.out.println("Pairwise distances after random projection ");
+            calculateDistance(randomNodes, prob.x);
         }
         prob.l = files.size();
         System.out.println("[SVM TRAIN END]");
 		return prob;
 	}
+
+    public void chooseDataPoints(svm_node[][] dataNodes){
+        Random r = new Random();
+        int size = dataNodes.length;
+        int i = numDataPoints;
+        while( i > 0 ){
+            int index = r.nextInt(size);
+            randomNodes.add(index);
+            i--;
+        }
+    }
+    public void calculateDistance(ArrayList<Integer> dataNodes, svm_node[][] nodes){
+        int size = dataNodes.size();
+        for(int i = 0; i < size/2; i++){
+            System.out.println(/*"Distance between Data Node "+(i+1)+" with dimensionality "+nodes[dataNodes.get(i)].length
+                    +" and data Data Node "+(size-i)+" with dimensionality "+nodes[dataNodes.get(size-i-1)].length+" is "*/
+                    distanceBetweenVector(nodes[dataNodes.get(i)], nodes[dataNodes.get(size-i-1)]));
+        }
+    }
+
+    public double distanceBetweenVector(svm_node[] v1, svm_node[] v2){
+        double distance = 0.0;
+        int i=0;
+        int j=0;
+        int index1 = 0;
+        int index2 = 0;
+        double value1= 0.0;
+        double value2 = 0.0;
+        while(i < v1.length-1 && j < v2.length-1){
+            index1 = v1[i].index;
+            value1 = v1[i].value;
+            index2 = v2[j].index;
+            value2 = v2[j].value;
+            if(index1 == index2){
+                distance += ((value1- value2)*(value1- value2));
+                i++;
+                j++;
+            }else if(index1 > index2){
+                distance += ((0 - value2)*(0 - value2));
+                j++;
+            }else{
+                distance += ((value1 - 0)*(value1 - 0));
+                i++;
+            }
+        }
+        if( i < v1.length - 1){
+            while(i < v1.length -1){
+                distance += (v1[i].value * v1[i].value);
+                i++;
+            }
+        }
+        if( j < v2.length - 1){
+            while(j < v2.length -1){
+                distance += (v2[j].value * v2[j].value);
+                j++;
+            }
+        }
+        return Math.sqrt(distance);
+    }
 	
 	public void svmPredict(String directory) throws IOException{
 		

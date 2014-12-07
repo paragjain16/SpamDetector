@@ -23,6 +23,8 @@ public class Test {
     private static List<String> trainSet;
     private static List<String> spamHams;
     private static boolean crossValidation = true;
+    static int spamCount = 2000;
+    static int hamCount = 1000;
     static int[] interestingTokens = { 5, 10, 15, 20, 30, 40, 50, 80, 100, Integer.MAX_VALUE};
     static int[] accuracyHam = new int[interestingTokens.length];
     static int[] accuracySpam = new int[interestingTokens.length];
@@ -65,7 +67,7 @@ public class Test {
 	}
 	
 	public static void svm_test(boolean rp, int dimSize){
-		SVMTest1 svm = new SVMTest1();
+		SVMTest svm = new SVMTest();
         svm.setRP(rp);
         svm.setReducedDimensionSize(dimSize);
 		try {
@@ -85,8 +87,7 @@ public class Test {
         String datapath = path + "\\data\\";
         String spamHamFile = path + "\\full\\index";
         spamHams = DataReader.readFile(spamHamFile);
-        int spamCount = 5000;
-        int hamCount = 3000;
+
         trainSet = new ArrayList<String>((int)(0.8*(spamCount+hamCount)));
         testSet = new ArrayList<String>((int)(0.2*(spamCount+hamCount)));
         /**
@@ -94,8 +95,8 @@ public class Test {
          */
         //Collections.shuffle(spamHams);
         if(!crossValidation) {
-            int testSpam = 500;
-            int testHam = 500;
+            int testSpam = (int)(0.2*spamCount);
+            int testHam = (int)(0.2*hamCount) ;
             spamCount -=testSpam;
             hamCount -= testHam;
 

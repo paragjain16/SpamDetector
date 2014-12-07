@@ -19,8 +19,8 @@ public class NaiveBayes {
     private double numberOfHam;
     private StopWords stopWords;
     //private final String regex = "\\W+";
-	//private final String regex = "[^a-zA-Z0-9$'-_!%*]";
-    private final String regex = "\\s+";
+	private final String regex = "[^a-zA-Z0-9$'-_!%*.,<>]";
+    //private final String regex = "\\s+";
     public boolean cf = false;
     public int ngram = 4;
     private boolean noHTML = false;
@@ -73,10 +73,15 @@ public class NaiveBayes {
     public void trainSpam(String file) {
         numberOfSpam++;
         BufferedReader br;
+        boolean end = false;
         try {
             br = new BufferedReader(new FileReader(file));
             String line;
             while ((line = br.readLine()) != null) {
+                if(end)
+                    break;
+                if(line.startsWith("Content-Disposition"))
+                    end = true;
                 if(filterLine(line))
                     continue;
                 if(noHTML) {
@@ -132,11 +137,15 @@ public class NaiveBayes {
     public void trainHam(String file) {
         numberOfHam++;
         BufferedReader br;
-
+        boolean end =false;
         try {
             br = new BufferedReader(new FileReader(file));
             String line;
             while ((line = br.readLine()) != null) {
+                if(end)
+                    break;
+                if(line.startsWith("Content-Disposition"))
+                    end = true;
                 if(filterLine(line))
                     continue;
                 multiply = 1.0;
@@ -289,8 +298,12 @@ public class NaiveBayes {
         HashMap<String, Double> myMap = new HashMap<String, Double>();
 
         pWordSpamDefault = 0.4;
-
+        boolean end = false;
         for (String line : email) {
+            if(end)
+                break;
+            if(line.startsWith("Content-Disposition"))
+                end = true;
             if(filterLine(line))
                 continue;
             double p_word = pWordSpamDefault;
@@ -449,6 +462,8 @@ public class NaiveBayes {
             return "Rec*";
         else if(emailLine.startsWith("To"))
             return "To*";
+        else if(emailLine.startsWith("X-"))
+            return "X*";
 
         return prefix;
     }
@@ -456,8 +471,10 @@ public class NaiveBayes {
     public boolean filterLine(String line){
         //if(isEmailHeader(line)) return true;
         /*if(line.startsWith("X-"))
-            return true;
-        if(line.startsWith("Received"))
+            return true;*/
+       /* if(line.length() >30 && line.matches("[^ ]*"))
+            return true;*/
+        /*if(line.startsWith("Received"))
             return true;
         if(line.length() > 1000 && line.matches("[^ ]*"))
             return true;*/

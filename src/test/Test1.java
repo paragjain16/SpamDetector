@@ -9,31 +9,77 @@ import java.util.List;
 import bayes.NaiveBayes1;
 import reader.DataReader;
 import svm.SVMTest;
+import svm.SVMTest1;
+import svm.SVMTest2;
 
 public class Test1 {
-
+    private static ArrayList<String> testSet;
+    private static ArrayList<String> trainSet;
+    private static List<String> spamHams;
     public static void main(String[] args) {
         // TODO Auto-generated method stub
-		indexFileRead_TREC();
+		//indexFileRead_TREC();
 //		indexFileRead_LBJ();
-        /*if(args.length > 0) {
-            boolean rp = Boolean.parseBoolean(args[0]);
-            int size = Integer.parseInt(args[1]);
+        if(args.length > 1) {
+            boolean rp = Boolean.parseBoolean(args[1]);
+            int size = Integer.parseInt(args[2]);
             svm_test(rp, size);
         }else
-            svm_test(false, 0);*/
+            svm_test(false, 0);
     }
+    public static void readFiles(){
+        String path = "C:\\Users\\Parag\\Desktop\\Project\\trec07p";
+        String datapath = path + "\\data\\";
+        String spamHamFile = path + "\\full\\index";
+        spamHams = DataReader.readFile(spamHamFile);
+        int spamCount = 1000;
+        int hamCount = 1000;
+        trainSet = new ArrayList<String>((int)(0.8*(spamCount+hamCount)));
+        testSet = new ArrayList<String>((int)(0.2*(spamCount+hamCount)));
+        /**
+         * 80% for train. 20% for test
+         */
+        //Collections.shuffle(spamHams);
 
+            int testSpam = 200;
+            int testHam = 200;
+            spamCount -=testSpam;
+            hamCount -= testHam;
+
+            int i = 0;
+            while (i < spamHams.size() && (spamCount > 0 || hamCount > 0 || testSpam > 0 || testHam > 0)) {
+                String email = spamHams.get(i);
+                if (email.startsWith("spam")) {
+                    if (spamCount > 0) {
+                        trainSet.add(email);
+                        spamCount--;
+                    } else if (testSpam > 0) {
+                        testSet.add(email);
+                        testSpam--;
+                    }
+                } else {
+                    if (hamCount > 0) {
+                        trainSet.add(email);
+                        hamCount--;
+                    } else if (testHam > 0) {
+                        testSet.add(email);
+                        testHam--;
+                    }
+                }
+                i++;
+            }
+    }
     public static void svm_test(boolean rp, int dimSize){
-        SVMTest svm = new SVMTest();
+        SVMTest2 svm = new SVMTest2();
         svm.setRP(rp);
         svm.setReducedDimensionSize(dimSize);
+        readFiles();
         try {
             String trainDirectory = "C:\\Users\\Parag\\Desktop\\Project\\LBJSpamDetector\\data\\spam\\train";
-            svm.svmTrain(trainDirectory);
+            svm.svmTrain(trainSet);
 
             String testDirectory = "C:\\Users\\Parag\\Desktop\\Project\\LBJSpamDetector\\data\\spam\\test";
-            svm.svmPredict(testDirectory);
+            svm.svmPredict(testSet);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
